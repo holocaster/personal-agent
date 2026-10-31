@@ -1,0 +1,7 @@
+# prompt_toolkit for the interactive Input Box
+
+The interactive REPL needed an Input Box: framed input, a Status Footer under it, in-memory history on arrow up, Tab completion for REPL Commands, and Alt+Enter for a newline. The project leans toward hand-rolled code over libraries (ADR-0002), so a hand-rolled ANSI line editor was the first alternative considered; we rejected it because raw-mode key decoding, terminal resize, bracketed paste and wide UTF-8 characters are exactly where hand-rolled line editors break, and none of that is this project's actual job. Textual was rejected because it is a full-screen application: output would live inside the app instead of the terminal's own scrollback. We chose `prompt_toolkit` in inline (non-full-screen) mode, used only to read one input at a time; once the input is submitted, the REPL prints to stdout as before, so finished output lands in the terminal's scrollback.
+
+## Consequences
+
+`prompt_toolkit` becomes a runtime dependency. It is used only for reading interactive input; the Router, Providers, Call Log and the piped/non-TTY line mode do not import it, so removing it later means replacing one input module, not the REPL. Unlike ADR-0002's case, the library is not taking over logic this project exists to own. Revisit if the project ever needs type-ahead during a request or a persistent full-screen layout, which inline mode does not provide.

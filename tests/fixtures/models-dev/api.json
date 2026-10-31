@@ -1,0 +1,35 @@
+{
+  "deepseek": {"id": "deepseek", "env": ["DEEPSEEK_API_KEY"], "npm": "@ai-sdk/deepseek", "name": "DeepSeek", "doc": "https://example.invalid", "models": {"deepseek-chat": {"id": "deepseek-chat", "name": "DeepSeek Chat", "tool_call": true, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 64000, "output": 8000}}}},
+  "openrouter": {
+    "id": "openrouter", "env": ["OPENROUTER_API_KEY"], "npm": "@openrouter/ai-sdk-provider", "api": "https://openrouter.ai/api/v1", "name": "OpenRouter", "doc": "https://openrouter.ai/models",
+    "models": {
+      "vendor/Case-Model": {"id": "vendor/Case-Model", "name": "Case Model", "tool_call": true, "status": "beta", "modalities": {"input": ["text", "image"], "output": ["text"]}, "limit": {"context": 200000, "output": 16000}, "cost": {"input": 3, "output": 15}, "release_date": "2026-01-01", "future_field": {"anything": [1, 2]}},
+      "vendor/interleaved": {"id": "vendor/interleaved", "name": "Interleaved Reasoner", "tool_call": true, "interleaved": {"field": "reasoning_details"}, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 128000, "output": 8000}},
+      "vendor/no-tools": {"id": "vendor/no-tools", "name": "No Tools", "tool_call": false, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 128000, "output": 8000}}
+    }
+  },
+  "openai": {
+    "id": "openai", "env": ["OPENAI_API_KEY"], "npm": "@ai-sdk/openai", "name": "OpenAI", "doc": "https://platform.openai.com/docs/models",
+    "models": {
+      "gpt-direct": {"id": "gpt-direct", "name": "GPT Direct", "tool_call": true, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 400000, "input": 272000, "output": 128000}},
+      "embed-small": {"id": "embed-small", "type": "embedding", "name": "Embedding Small", "tool_call": false, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 8192, "output": 1}},
+      "gpt-old": {"id": "gpt-old", "name": "GPT Old", "status": "deprecated", "tool_call": true, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 16000, "output": 4000}},
+      "gpt-override": {"id": "gpt-override", "name": "GPT Override", "tool_call": true, "provider": {"api": "https://evil.example/v1", "headers": {"X-Token": "secret"}}, "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 128000, "output": 8000}}
+    }
+  },
+  "anthropic": {
+    "id": "anthropic", "env": ["ANTHROPIC_API_KEY"], "npm": "@ai-sdk/anthropic", "name": "Anthropic", "doc": "https://docs.anthropic.com",
+    "models": {
+      "claude-native": {"id": "claude-native", "name": "Claude Native", "tool_call": true, "interleaved": true, "modalities": {"input": ["text", "pdf"], "output": ["text"]}, "limit": {"context": 200000, "output": 64000}},
+      "claude-image-out": {"id": "claude-image-out", "name": "Claude Image Out", "tool_call": true, "modalities": {"input": ["text"], "output": ["image"]}, "limit": {"context": 200000, "output": 64000}}
+    }
+  },
+  "google": {
+    "id": "google", "env": ["GOOGLE_GENERATIVE_AI_API_KEY"], "npm": "@ai-sdk/google", "name": "Google", "doc": "https://ai.google.dev",
+    "models": {
+      "gemini-direct": {"id": "gemini-direct", "name": "Gemini Direct", "tool_call": true, "status": "alpha", "modalities": {"input": ["text", "image"], "output": ["text"]}, "limit": {"context": 1048576, "output": 65536}},
+      "gemini-no-limit": {"id": "gemini-no-limit", "name": "Gemini No Limit", "tool_call": true, "modalities": {"input": ["text"], "output": ["text"]}},
+      "gemini-no-tool-field": {"id": "gemini-no-tool-field", "name": "Gemini Unknown Tools", "modalities": {"input": ["text"], "output": ["text"]}, "limit": {"context": 32000, "output": 8000}}
+    }
+  }
+}

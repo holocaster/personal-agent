@@ -1,0 +1,15 @@
+# 03: Select, validate and size the pair from the catalog
+
+**What to build:** Inside a running Session, browse/search the catalog, switch to an exact Provider/model with catalog and key validation and one atomic save, and refresh the catalog without changing the route. Startup and every task/Retry/manual-Compression boundary apply catalog admission. Exchange limits use Models.dev per-field capacities with labeled provenance. Ticket 02's interim restart-only selection ends here.
+
+**Blocked by:** 02 - Run every Session on one configured direct pair.
+
+**Spec:** `docs/specs/0054-direct-provider-model-selection.md`, R6, R7, R9 (catalog capacity snapshot and in-session change), R13, R19 (final documentation), integrating R1-R4 at setup/dispatch; Implementation Decisions (catalog cache/response contract, capacity versus accounting, user-visible command contract); Testing Decisions (catalog-dependent cutover items). **ADRs:** ADR-0011/0012; preserve ADR-0002 dispatch/accounting boundaries.
+
+- [x] Implement spec `/model`, `/models`, refresh, `/config`, help/completion behavior. Validate catalog+key before atomic pair save/activation; invalid/cancel/save failure keeps active/saved pair. Refresh failure/removal never changes route; removal blocks subsequent task/Retry/manual Compression with local reason while in-flight snapshots remain fixed.
+- [x] Startup admits the configured pair through ticket 01's catalog interface (cache first, one bounded fetch only when no usable cache, refresh guidance when unavailable); remote catalog fields never configure adapters, credentials or endpoints. Tests admit a synthetic exact offering through that same interface; no live catalog, real home or credentials.
+- [x] Resolve/freeze limits using manual/Models.dev/local-LiteLLM/assumed per-field provenance, preserving complete input counting, reserves/margin/output allowance and stop-on-unmeasurable behavior. Keep locked tokenization/cache-aware normalized cost semantics; missing local price is unknown, not model rejection/zero. No Models.dev pricing in accounting.
+- [x] Validate focused increments and this ticket's matrix: catalog invalidation (startup and after refresh), pair-save faults and cancellation, in-session pair change applied at the next task and explicit Retry while an in-flight snapshot stays fixed, limits/provenance per field, and unknown local pricing for an eligible model. Run complete installed `.venv/bin/pytest` after focused checks; localhost/MCP checks use required sandbox escalation, no installs/model calls.
+- [x] Update concise README, docs/ENV_VARS, CLAUDE, `.notebook` and test guidance for in-session selection, catalog admission and capacity provenance; mark research delivery status. Use `writing-for-agents` for CLAUDE. Coordinate Main's owned CONTEXT/state update; do not edit those. Re-run the stale tier/evaluator search over current source/docs.
+
+**Integration rule:** Builds on ticket 02's Runtime Configuration and ticket 01's catalog interface; no generic selection framework or adapter. Keep both prior tickets' guarantees green. Main arranges final independent feature verification after this ticket.

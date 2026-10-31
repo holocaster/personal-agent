@@ -1,0 +1,20 @@
+# 01: A transient failure is retried instead of losing the task
+
+**What to build:** the user types a task, the Provider call hits a 503 or a network timeout, and instead of seeing `Error: ...` they get their answer — the Router quietly tried again. Up to three Attempts at the Complexity Tier the Classifier picked, with a growing pause between them, and a permanent failure (bad key, bad request, malformed response) still fails immediately rather than making the user wait 1.5 seconds to be told the same thing. Because one typed task can now produce several Provider calls, the Call Log stops being one line per task and becomes one line per Attempt, so a reader can count what a task really cost.
+
+**Blocked by:** None (can start immediately).
+
+**Spec:** `docs/specs/0002-router-reliability.md` — Implementation Decisions (Where retry lives; Retryability predicate; Attempt budget and backoff; Call Log schema; Ctrl-C); Testing Decisions (Seam; Second seam — the clock; Fixture extension; Coverage for the retryability predicate, Retry, Backoff, Call Log). **ADRs:** none for this ticket.
+
+- [x] A pure retryability predicate lives with the Provider call and answers, from an exception alone, whether it is transient: true for a timeout (including a `URLError` wrapping one) and for `HTTPError` codes 429, 500, 502, 503, 504; false for every other `HTTPError` code, for parse-shaped exceptions on a malformed response, and for any exception type it does not recognise.
+- [x] The Router runs up to 3 Attempts at a Complexity Tier, stopping early on success or on a non-retryable failure. The Attempt count and the backoff sequence (0.5 / 1 / 2) are module-level constants in the Router, not environment variables.
+- [x] Backoff is slept only *between* Attempts: a first-Attempt success adds zero latency, and a fully exhausted tier sleeps 0.5s then 1s — never after the final Attempt.
+- [x] `call_openrouter` is unchanged: still one HTTP request that raises on failure, with no retry, tier, budget or logging concept inside it.
+- [x] The Call Log writes one entry per Attempt. Every existing key keeps its name, type and meaning, now scoped to a single Attempt; `latency_ms` covers that Attempt's Provider call and excludes backoff sleep.
+- [x] The Call Log gains one key, `attempt`: a 1-based integer counting Attempts within the current tier. Failed Attempts carry `ok: false` with their error text; the successful one carries `ok: true` and a null error; every entry in a chain repeats the same `task`.
+- [x] When all 3 Attempts fail, `route()` returns the same shape of failure result as today (tier, model, `error` text from the last Attempt) and the REPL prints its existing single `Error:` line. Success returns the answer with the REPL's output unchanged.
+- [x] `KeyboardInterrupt` is not caught by the retry loop — it propagates out of `route()` to the REPL's existing handler, aborting the whole chain. Attempts already completed keep their Call Log entries; the interrupted one gets none.
+- [x] Tests drive the existing `urlopen` fake as the only seam, expressing scenarios as a scripted list of per-call outcomes and asserting the model ID carried by each captured request. The fixture is extended only with a way to express "raise this for every remaining call".
+- [x] Backoff sleep is referenced through a replaceable module-level name in the Router so tests assert the delay sequence without spending real seconds. `time.monotonic` stays real and no test asserts an exact `latency_ms`, only that it is a number.
+- [x] Tests cover: transient failure then success (two requests, same model ID, answer returned); three transient failures (three requests, then a failure result); a non-retryable failure (exactly one request); a first-Attempt success (one request, no sleep); the recorded sleep schedule for an exhausted tier; and a Call Log file whose lines carry `attempt` running 1, 2, 3 with the existing key set intact.
+- [x] The README describes retry behaviour — how many Attempts, which failures are retried, and that permanent failures fail immediately.

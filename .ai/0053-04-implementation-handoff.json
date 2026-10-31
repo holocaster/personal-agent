@@ -1,0 +1,196 @@
+{
+  "status": "ready_for_review",
+  "implementation_status": "committed",
+  "commit_pending": false,
+  "ticket": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.md",
+  "base_sha": "9c8214d78c543c020d0f73d63a5f0433d0790cee",
+  "resumed_from": "9c8214d78c543c020d0f73d63a5f0433d0790cee",
+  "head_sha": "ba965838a3a1a36146dfd32062f3fcb934ed0475",
+  "current_head_sha": "ba965838a3a1a36146dfd32062f3fcb934ed0475",
+  "proposed_commit_message": "feat(report): show task routes and account for cached usage",
+  "summary": "Bounded chronological Session Report execution/route evidence and cache-aware direct-provider cost accounting, with stream/failure parity and truthful coverage. Committed after explicit current user approval; independent review pending.",
+  "changed_files": [
+    "README.md",
+    "docs/research/2026-10-14-cache-and-session-routing.md",
+    "src/personal_agent/cost.py",
+    "src/personal_agent/providers/chat_completions.py",
+    "src/personal_agent/providers/http.py",
+    "src/personal_agent/session_report.py",
+    "tests/test_cache_accounting.py",
+    "tests/test_call_log.py",
+    "tests/test_compression.py",
+    "tests/test_context_budget.py",
+    "tests/test_context_recovery.py",
+    "tests/test_provider.py",
+    "tests/test_session_report.py",
+    "tests/test_session_tier.py"
+  ],
+  "staged_diff": "14 files changed, 666 insertions(+), 52 deletions(-)",
+  "tests_added_or_changed": [
+    "tests/test_cache_accounting.py: 80 new cases across fixed-price real LiteLLM contracts, four-provider stream/nonstream/failure parity, invalid/missing/zero/cache TTL/rate cases, one spend charge per physical Attempt, malformed details and invalid streamed money.",
+    "tests/test_session_report.py: six new execution-boundary, same-sample fraction, retention/render-bound, damaged-record attribution, redaction and local-only state-preservation tests; existing huge-counter test now checks retained aggregates within 16 KiB.",
+    "tests/test_provider.py, tests/test_call_log.py: cache-aware estimator caller expectations and explicit known-zero OpenAI fixtures.",
+    "tests/test_compression.py, tests/test_context_recovery.py, tests/test_context_budget.py, tests/test_session_tier.py: update affected estimator doubles and assert inclusive Anthropic prompt plus complete cache breakdown, retaining previous persistence, truncation, retry, audit and spend assertions."
+  ],
+  "checks": [
+    {
+      "command": ".venv/bin/pytest -q --full-trace > /tmp/0053-ticket04-final-retry-pytest.log 2>&1",
+      "permissions": "require_escalated for existing localhost/MCP fixtures",
+      "result": "passed",
+      "evidence": "2644 passed in 139.56s (0:02:19), exit 0; /tmp/0053-ticket04-final-retry-pytest.log"
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_cache_accounting.py tests/test_provider.py tests/test_streaming.py tests/test_native_streaming.py tests/test_session_report.py",
+      "result": "passed",
+      "evidence": "353 passed in 10.45s after the final invalid-stream-cost correction."
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_compression.py tests/test_context_budget.py tests/test_context_recovery.py tests/test_session_tier.py",
+      "result": "passed",
+      "evidence": "484 passed in 35.41s after updating all affected estimator doubles."
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_session_report.py tests/test_provider.py tests/test_streaming.py tests/test_native_streaming.py tests/test_cache_accounting.py tests/test_call_log.py tests/test_detailed_audit.py tests/test_context_overflow.py tests/test_routing.py",
+      "result": "passed",
+      "evidence": "537 passed in 17.50s before the later malformed-details and invalid-money coverage was added; final full suite includes every case."
+    },
+    {
+      "command": ".venv/bin/python -m compileall -q src/personal_agent",
+      "result": "passed",
+      "evidence": "Exit 0 on final production code."
+    },
+    {
+      "command": "git diff --check; git diff --cached --check",
+      "result": "passed",
+      "evidence": "Both exited 0; all 14 intended files staged and no unstaged changes."
+    },
+    {
+      "command": "uv run --offline pytest -q",
+      "result": "not_run",
+      "evidence": "Parent authorized existing .venv/bin/pytest fallback because offline uv rebuild lacks cached hatchling; no dependency installation or network rebuild attempted."
+    },
+    {
+      "command": "Standalone lint/typecheck/build",
+      "result": "not_run",
+      "evidence": "No such commands configured in pyproject.toml; compileall and full pytest are available checks."
+    },
+    {
+      "command": "git commit -m \"feat(report): show task routes and account for cached usage\"",
+      "result": "failed",
+      "evidence": "Automatic approval review rejected before command execution: trusted AGENTS.md requires asking before committing and no approval for this exact commit was recognized."
+    }
+  ],
+  "root_causes_and_corrections": [
+    "http.response_usage formerly retained nonstream cache counters only for OpenRouter; direct Anthropic accounting passed only noncache input to cost.estimate; cost.estimate discarded every cache/TTL category.",
+    "Normalization now exposes supplied read/write counters through all Providers and paths. Anthropic total prompt adds disjoint noncache/read/write categories; OpenAI/OpenRouter/Gemini counters remain subsets. Available Anthropic TTL details survive native streaming snapshots.",
+    "Locked LiteLLM get_model_info silently substitutes zero for missing base price fields. The estimator validates applicable prices against the original local model_cost entry selected by info.key, then calls the real cost_per_token using a Usage object with inclusive prompt totals and prompt_tokens_details. No price multipliers are hardcoded.",
+    "Session Report formerly aggregated purposes only. It now attributes Attempts by explicit opening, Turn End, next opening and Run boundaries; malformed boundaries stop attribution until a new known opening. It retains the latest 20 executions and at most 16 consecutive purpose/route groups each.",
+    "The final self-check reproduced invalid streamed cost entering retained raw usage without an earlier valid cost in five failing cases. Invalid money is now ignored while prior valid reported cost and independent counters survive, preserving the existing stream failure contract."
+  ],
+  "report_evidence": {
+    "artifact": "/tmp/0053-ticket04-rendered-report.txt",
+    "generator": "/tmp/0053-ticket04-report-example.py",
+    "bytes": 5507,
+    "contents": [
+      "Two explicit executions with the same ordinal and text, distinct opening lines, submission versus Retry.",
+      "First ordinary route easy/openai/synthetic-first has cache-read 20/100 and estimated cost; next medium/openai/synthetic-second is marked observed Provider/model change.",
+      "Retry remains unresolved without a Turn End; its route has 2 Attempts but cache samples known for only 1/2, and the fraction uses that compatible sample only.",
+      "Tier evaluation inside the first execution stays separately labeled; maintenance outside it remains in aggregates and unattributed counts."
+    ],
+    "key_tests": [
+      "test_report_correlates_routes_by_explicit_openings_and_not_text",
+      "test_cache_fraction_uses_only_compatible_same_samples: 20/200 = 10% over 2/7 compatible samples; independent valid totals retained.",
+      "test_report_bounds_latest_executions_routes_and_bytes_without_losing_aggregates: 23 executions x 18 route groups, latest 20 identities retained, 2 Attempts beyond 16 groups per execution, all 414 Attempts and 41400 prompt tokens in aggregates, <=16384 rendered bytes.",
+      "test_record_damage_breaks_attribution_until_next_opening",
+      "test_route_labels_are_bounded_redacted_and_sanitized_before_display",
+      "test_report_preserves_pending_routing_input_usage_spend_and_configuration: forbids transport/tokenizer access, checks identical pending continuation, saved routing/input, Conversation, configuration, spend and repeated /usage, with existing Audit Events only."
+    ]
+  },
+  "pricing_evidence": {
+    "library": "Installed locked LiteLLM 1.102.0; no SDK/API dependency changes.",
+    "synthetic_rates": {
+      "input_per_token": 0.01,
+      "output_per_token": 0.02,
+      "cache_read_per_token": 0.001,
+      "cache_write_5m_per_token": 0.03,
+      "cache_write_1h_per_token": 0.05
+    },
+    "exact_cases": [
+      "Anthropic noncache=10, read=20, write=30, output=5; write TTL 5m=10 and 1h=20 => normalized prompt=60, estimated cost approximately $1.52.",
+      "Anthropic default unsplit write=30 and equivalent OpenAI inclusive prompt=60/read=20/write=30/output=5 => approximately $1.12.",
+      "Gemini inclusive prompt=30/read=20/output=5 => approximately $0.22.",
+      "Uncached prompt=10/output=5 => approximately $0.20; valid known zero input/output => $0; inconsistent, invalid or required missing counts/rates => unavailable.",
+      "OpenRouter reported cost .123456789 survives normalization and streaming/failure parity exactly; it is never recomputed."
+    ],
+    "key_tests": [
+      "test_anthropic_cache_counts_and_ttl_are_normalized_and_billed_once",
+      "test_direct_cache_subsets_are_not_added_twice",
+      "test_supplied_cache_evidence_matches_stream_nonstream_and_failure",
+      "test_missing_applicable_local_rate_never_becomes_free",
+      "test_invalid_or_partial_ttl_breakdown_is_unavailable",
+      "test_available_estimate_is_logged_and_charged_once_per_physical_attempt",
+      "test_invalid_stream_money_never_replaces_available_reported_cost"
+    ],
+    "omission_policy": [
+      "OpenAI: require both cache-read and cache-write counts for an estimate. Current docs have different cache write/minimum behavior by model generation, so no universal omitted-zero assumption is used. Missing fields remain unknown in report coverage.",
+      "Anthropic: this application sends no cache_control and does not activate native caching; official caching activation/default-TTL contracts support existing uncached omitted-zero calculation. Supplied cache counts/TTL evidence are validated. Coverage still retains absence.",
+      "Gemini: official GenerateContent proto defines cached_content_token_count as implicit-presence int32. ProtoJSON may omit its zero, so calculation may use zero for an omitted scalar while coverage stays absent. This path creates no explicit cache resource or write/storage charge."
+    ],
+    "locked_source_paths": [
+      ".venv/lib/python3.12/site-packages/litellm/cost_calculator.py:cost_per_token",
+      ".venv/lib/python3.12/site-packages/litellm/litellm_core_utils/llm_cost_calc/utils.py:generic_cost_per_token, parse_prompt_tokens_details, calculate_cache_writing_cost",
+      ".venv/lib/python3.12/site-packages/litellm/utils.py:_build_model_info (missing base rate -> zero substitution)",
+      ".venv/lib/python3.12/site-packages/litellm/llms/anthropic/cost_calculation.py",
+      ".venv/lib/python3.12/site-packages/litellm/llms/openai/cost_calculation.py",
+      ".venv/lib/python3.12/site-packages/litellm/llms/gemini/cost_calculator.py"
+    ],
+    "sources": [
+      "Context7 resolved /berriai/litellm, /anthropics/anthropic-sdk-python, /websites/ai_google_dev_api and /websites/developers_openai_api; queried provider usage/cache and LiteLLM Usage/TTL semantics.",
+      "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "https://github.com/anthropics/anthropic-sdk-python/blob/main/src/anthropic/types/usage.py",
+      "https://developers.openai.com/api/docs/guides/prompt-caching",
+      "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create",
+      "https://ai.google.dev/api/generate-content#UsageMetadata",
+      "https://github.com/googleapis/googleapis/blob/master/google/ai/generativelanguage/v1beta/generative_service.proto",
+      "https://protobuf.dev/programming-guides/json/#presence-and-default-values"
+    ]
+  },
+  "glossary_proposal": {
+    "Estimated Cost": "A Call Log Attempt's cost when it did not come from the Provider itself. OpenRouter's reported cost remains authoritative. Anthropic, OpenAI and Gemini estimates use locked local LiteLLM pricing with normalized inclusive prompt totals, supplied cache-read/write counts and reported Anthropic write TTLs, marked cost_estimated: true. Invalid, unsupported or incomplete required pricing evidence leaves cost unavailable. Provider-contract omitted-zero rules apply only to calculation; absent counters remain unknown report coverage. Run spend charges each available physical Attempt cost once; historical recorded costs are not rewritten.",
+    "Session Report": "The bounded local /report view of recorded current-Session activity across Runs, retaining Session/purpose aggregates and independent metric coverage before optional detail. It shows the latest 20 explicit submission/Retry executions with Run/opening identity, original ordinal, recorded outcome or unresolved state, and up to 16 consecutive purpose/route groups per execution. Ordinary routes retain Attempt/retry, duration, first-text, token/cache and cost provenance evidence; maintenance is separate. Cache-read fractions use compatible same samples. Omission/partial-inspection notices, redaction and terminal sanitization remain explicit. Route changes and adjacent cache observations establish no causality or savings. Reporting adds only its existing Audit Event and changes no routing, Conversation, pending work, configuration, latest /usage or spend."
+  },
+  "pre_existing_out_of_scope_issue": {
+    "issue": "Gemini completion/output accounting excludes separately reported thought tokens.",
+    "status": "Preserved unchanged at the parent's explicit direction; parent will accept-and-log before independent review, and reviewer must assess any R19 implication.",
+    "evidence": [
+      "Baseline 9c8214d78c543c020d0f73d63a5f0433d0790cee already used only candidatesTokenCount for Gemini completion_tokens in providers/http.py.",
+      "Current src/personal_agent/providers/http.py:112-127 retains that formula.",
+      "Pre-existing tests/test_context_budget.py:test_gemini_empty_capped_response_preserves_termination_and_usage, lines 172-186, supplies candidatesTokenCount=0, thoughtsTokenCount=16000 and asserts completion_tokens=0; that test was not changed.",
+      "Locked .venv/lib/python3.12/site-packages/litellm/llms/vertex_ai/gemini/vertex_and_google_ai_studio_gemini.py:1894 reads thoughts as reasoning; lines 1918-1924 add reasoning to completion tokens when candidate counts are not inclusive.",
+      "Consequently existing direct Gemini estimates can omit thought-token cost. This issue predates cache changes and is independent of read/write inclusion."
+    ]
+  },
+  "deviations": [
+    "Used the explicitly authorized existing .venv pytest fallback rather than attempting an offline uv rebuild.",
+    "No commit created: auto-review rejected the exact git commit. Parent explicitly directed preserving the staged concrete result for user approval rather than reverting it."
+  ],
+  "prior_verification_events": [
+    "Initial full suite: 2585 passed / 41 failed in 141.26s; all failures were affected old estimator doubles rejecting new kwargs or asserting old Anthropic noncache cost input. All were updated without deleting their behavioral assertions; their four focused files passed 484 tests.",
+    "Intermediate full suite before the final invalid-money guard: 2634 passed in 140.15s; /tmp/0053-ticket04-full-pytest.log.",
+    "An intermediate final-suite run ended with unexplained KeyboardInterrupt in threading.py:1169 after 623 passed in 46.60s, exit 2; /tmp/0053-ticket04-final-pytest.log. No source edits or stop request occurred. The final --full-trace retry passed all 2644 tests."
+  ],
+  "approval_block": {
+    "action": "git commit -m \"feat(report): show task routes and account for cached usage\"",
+    "review_result": "rejected before execution",
+    "stated_reason": "The local commit is bounded and reversible, but trusted AGENTS.md explicitly requires asking before committing, and no user approval for this exact commit is present.",
+    "next_step": "Parent asks the user for explicit approval of this concrete tested local commit, then creates it, records head_sha and dispatches independent exact-range review with mandatory BRANCH security. Do not mark ticket done before approval/review.",
+    "preserved_state": "All 14 intended files are staged; git diff --cached --check passes; branch tip remains the base SHA. No push was attempted.",
+    "resolution": "User explicitly approved this commit and remaining local feature commits on 2026-10-15: sim pode commit. Commit created successfully; do not push."
+  },
+  "skipped_or_not_checked": [
+    "No paid model calls, real cache-hit/latency/savings benchmarking, dependency changes, sudo or push.",
+    "Optional upstream diagnostics are not expanded in chronological rows; reporting performs no lookup.",
+    "No independent review performed by the implementer; that is the next isolated reviewer step.",
+    "Parent-owned CONTEXT, brief, ticket/index, PROJECT_STATE and review records were not edited."
+  ]
+}

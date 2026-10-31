@@ -1,0 +1,86 @@
+{
+  "status": "ready_for_review",
+  "paths_anonymized": true,
+  "ticket": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.md",
+  "correction_round": 1,
+  "finding": "F1",
+  "base_sha": "6e1de330173377f02209ae14f475bb934f316192",
+  "resumed_from": "457428799a23ad17fbeacd9964b9c3f1fa5c3fc2",
+  "prior_implementation_head": "968b61321762010366e11c80b721bbcec85c0188",
+  "head_sha": "0f5b6742095482af168af0741059e7cc487dcd6c",
+  "summary": "Fixed F1 at the shared recursive walker: compare lexical child paths and actual canonical directory child locations before traversal, read or yield. Ordinary safe aliases preserve lexical display paths, glob semantics and ordering.",
+  "changed_files": [
+    "src/personal_agent/tools/workspace.py",
+    "tests/test_file_recovery.py",
+    "tests/test_workspace_tools.py"
+  ],
+  "tests_added_or_changed": [
+    "tests/test_file_recovery.py::test_recursive_workspace_aliases_keep_recovery_images_out_of_provider_and_logs: 12 new cases covering search-before/search-after/list, same/cross-project storage, intermediate project-directory aliases and deeper catalog recursion; actual Tool result, Call Log, Detailed Audit and both Provider requests assert exact before/after base64 absence while safe visible files remain available.",
+    "tests/test_workspace_tools.py::test_safe_intermediate_directory_alias_preserves_read_list_search_and_glob_paths: 1 new case preserving ordinary alias reads, list/search, glob filtering, lexical paths and order."
+  ],
+  "root_cause": "Starting-path checks resolve an intermediate directory alias and accept its ordinary ancestor. The recursive walker previously checked each non-symlink child lexically against canonical recovery storage, so descendants under the alias bypassed the exclusion. Both recursive search_text and list_files share that walker.",
+  "proof": {
+    "reviewer_probe_red": "Original unmodified /tmp/test_0053_review_probes.py failed before code changes: 1 failed in 3.71s; next actual Provider HTTP request included cHJpdmF0ZSBvcmlnaW5hbA==. XML /tmp/0053-ticket05-correction-r1-red.xml.",
+    "regression_red": "12 new cases failed before production fix in 4.56s; four search-before failed results contained exact before-image, four search-after results exact after-image, and four lists exposed recovery paths. XML /tmp/0053-ticket05-correction-r1-regression-red.xml.",
+    "shared_callers": "_walk_files callers list_files and search_text inspected. _is_excluded consumers in workspace, Project Instructions, file_recovery and apply_patch inspected; final-target consumers already validate canonical paths/no-follow traversal. No interface/config/exports/dependencies changed.",
+    "preservation": "Only two production lines changed. R22 privacy strengthened without changing checkpoint capture/restore/storage/confirmation/retry contracts. Existing R21-R28 coverage retained and passed.",
+    "frozen_source": "/tmp/0053-ticket05-correction-r1-freeze.json: all 13 original implementation file hashes match unchanged final full source before commit.",
+    "self_check": "/tmp/0053-ticket05-correction-r1-self-check.md"
+  },
+  "checks": [
+    {
+      "command": "PYTHONPATH=. .venv/bin/pytest -q /tmp/test_0053_review_probes.py --junitxml=/tmp/0053-ticket05-correction-r1-probe-green.xml",
+      "result": "passed",
+      "evidence": "Unmodified independent reviewer probe: 1 passed in 4.04s."
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_file_recovery.py tests/test_workspace_tools.py -k 'recursive_workspace_aliases or safe_intermediate_directory_alias' --junitxml=/tmp/0053-ticket05-correction-r1-green.xml",
+      "result": "passed",
+      "evidence": "13 passed, 241 deselected in 3.80s."
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_file_recovery.py tests/test_workspace_tools.py tests/test_project_instructions.py tests/test_project_instructions_integration.py tests/test_workspace_skills.py tests/test_repl.py tests/test_main.py tests/test_continuation.py tests/test_agent_mode.py tests/test_session_storage.py tests/test_call_log.py tests/test_detailed_audit.py tests/test_audit_local.py tests/test_session_logs.py tests/test_context_budget.py tests/test_context_overflow.py tests/test_context_recovery.py --junitxml=/tmp/0053-ticket05-correction-r1-focused.xml",
+      "result": "passed",
+      "evidence": "1260 passed in 53.62s; require_escalated for existing localhost/MCP fixtures."
+    },
+    {
+      "command": ".venv/bin/python -m compileall -q src/personal_agent tests/test_file_recovery.py tests/test_workspace_tools.py",
+      "result": "passed",
+      "evidence": "Exit 0 on final source; no separately configured lint/typechecker in repository."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "evidence": "Exit 0 on final source before commit."
+    },
+    {
+      "command": ".venv/bin/pytest -q --junitxml=/tmp/0053-ticket05-correction-r1-full.xml",
+      "result": "passed",
+      "evidence": "ONE final unchanged full suite: 2757 passed in 159.69s. JUnit: tests=2757 failures=0 errors=0 skipped=0 time=159.615. require_escalated for existing localhost/MCP fixtures; authorized installed .venv fallback avoids uv offline rebuild missing hatchling."
+    },
+    {
+      "command": "Frozen SHA256 verification against /tmp/0053-ticket05-correction-r1-freeze.json",
+      "result": "passed",
+      "evidence": "All 13 original implementation files matched after full suite; no code edits during full."
+    },
+    {
+      "command": "git commit and git status --short",
+      "result": "passed",
+      "evidence": "Local commit 0f5b6742095482af168af0741059e7cc487dcd6c, 3 files, 66 insertions/1 deletion; working tree clean after commit."
+    }
+  ],
+  "verification_incidents": [
+    "Initial attempt to combine /tmp reviewer probe and repository test modules in one pytest invocation hit duplicate tests.conftest plugin registration during collection. No tests executed in that attempt. Corrected by running the unmodified external probe separately; both separate probe and repository tests passed."
+  ],
+  "commit": {
+    "subject": "fix(recovery): exclude snapshots through directory aliases",
+    "sha": "0f5b6742095482af168af0741059e7cc487dcd6c",
+    "authorization": "User explicitly approved remaining local feature0053 commits: sim pode commit. No push."
+  },
+  "deviations": [],
+  "discovered_issues": [],
+  "limitations": [
+    "No paid calls, dependency installs, sudo, push or external-doc lookup; stdlib filesystem business logic only.",
+    "Independent review remains required; actively racing external writers remain outside the approved contract."
+  ]
+}

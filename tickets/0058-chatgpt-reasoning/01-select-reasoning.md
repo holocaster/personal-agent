@@ -1,0 +1,23 @@
+# 01: Select ChatGPT reasoning effort
+
+**What to build:** Let a ChatGPT subscription user choose reasoning independently of the model, persist the preference, see it in the terminal and use it throughout the existing execution loop.
+
+**Blocked by:** None (can start immediately).
+
+**Spec:** none (fast path). These acceptance criteria are normative. **ADRs:** existing ADR-0015 ChatGPT subscription Provider.
+
+- [x] Preserve the account model catalog's `supported_reasoning_levels` (objects with `effort`) and optional `default_reasoning_level` as bounded, validated metadata on the existing Offering. Account-controlled descriptions/instructions are not injected into prompts. Missing capabilities remain unknown and keep existing models usable with `auto`; malformed present metadata fails safely. Do not infer supported efforts from model names or hard-code identical capabilities for every model.
+- [x] Add a ChatGPT-only persisted reasoning setting, `PA_CHATGPT_REASONING_EFFORT`, default `auto`. Reuse existing environment precedence, atomic home settings persistence and immutable RuntimeConfig snapshots. Existing configurations work unchanged. `auto` omits the wire effort and means the service default, never a guessed medium value.
+- [x] `/reasoning` shows the selected preference, advertised supported levels and known model default. `/reasoning <effort>` validates against the selected account model and saves for the next task or explicit Retry. `/reasoning auto` restores service default and remains available to recover from a disconnected/incompatible configuration. Invalid/unsupported input, failed persistence and cancellation leave active and saved settings unchanged. An explicit effort on missing capability metadata is rejected with a useful explanation. Do not change effort silently on a model/account change; reject or block incompatible selections before inference and explain `/reasoning auto` recovery.
+- [x] Expose the same edit in `/config` using the existing input component, with help and command completion. Show selected reasoning in ChatGPT route/config status and the interactive footer; distinguish `auto` from an observed effective default. API routes do not send this setting. Follow existing saved-setting override warnings and command/config auditing conventions.
+- [x] Send `reasoning: {effort: <selected>}` only for an explicit ChatGPT choice. Use one small shared path so initial execution, Tool follow-ups, transient retries, explicit Retry, manual/preventive Compression and native Subagents inherit the immutable task preference. Fork/Resume use the existing RuntimeConfig lifecycle. Revalidate supported capabilities at existing admission boundaries; do not add repeated catalog network requests per Tool exchange. Preserve existing replay and request-field checks, credentials, usage accounting and non-ChatGPT requests.
+- [x] Add focused offline behavioral tests proving catalog metadata validation, persistence/reload and snapshots, command/config success/failure and auto recovery, exact request effort/omission, incompatible selection/admission, Tool/retry/Compression propagation and child config inheritance. Adapt only directly affected fixtures. Run focused tests incrementally and the full existing suite at the end. No real account login, credential inspection or inference request is needed.
+- [x] Add concise usage documentation to README. No dependency, prompt/replay/log schema migration, new abstraction layer or unrelated cleanup. No code comments unless necessary. No commit or push without the user's permission.
+
+## Evidence and implementation areas
+
+The missing wire field is in `src/personal_agent/providers/chatgpt.py:call`; `ChatGPTAuth.models` currently discards reasoning metadata. Reuse `routing/runtime_config.py`, `routing/config_store.py`, `terminal/repl.py`, existing command completion and the Router's ChatGPT call kwargs. Check child config serialization, dotenv source tracking and all RuntimeConfig reconstruction sites.
+
+Official OpenAI reasoning guide verified 2026-10-26: https://developers.openai.com/api/docs/guides/reasoning documents Responses `reasoning={"effort": "low"}` and model-specific support. Project account-catalog evidence: `docs/research/2026-10-20-chatgpt-subscription-provider.md`, account model fields and reasoning spike. Reuse synthetic fixtures, never the spike's live credentials.
+
+Workflow exception: user explicitly forbids commits without permission. Work and review the uncommitted diff; the existing committed HEAD is the review baseline. Do not restore/delete others' files to satisfy clean-tree handoffs. Only this feature's ticket/state changes are present at implementation handoff.

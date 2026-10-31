@@ -1,0 +1,384 @@
+{
+  "status": "verified",
+  "feature": "0053-stable-sessions-and-recovery",
+  "implementation_range": "cf765d1188427099dc4918dccb8171ece1939e66..0f5b6742095482af168af0741059e7cc487dcd6c",
+  "checkout": "106b852ccbc6ffcda52c32eb0e802637b9c2b48e",
+  "role": "Independent final whole-feature integration/spec verifier; read-only repository.",
+  "priorities": [
+    {
+      "priority": 1,
+      "status": "verified",
+      "ticket": "01"
+    },
+    {
+      "priority": 2,
+      "status": "verified",
+      "ticket": "02"
+    },
+    {
+      "priority": 3,
+      "status": "verified",
+      "ticket": "03"
+    },
+    {
+      "priority": 4,
+      "status": "verified",
+      "ticket": "04"
+    },
+    {
+      "priority": 5,
+      "status": "verified",
+      "ticket": "05"
+    },
+    {
+      "priority": 6,
+      "status": "verified",
+      "ticket": "03"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_initial_selection_stays_stable_beyond_old_checkpoints",
+      "assessment": "Initial once, manual bypass, Resume retains selected route; no 5/15 schedule."
+    },
+    {
+      "id": "R2",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_auto_requests_once_without_duplicates_or_downgrade",
+      "assessment": "One explicit keep/raise request; manual selection lowers/cancels."
+    },
+    {
+      "id": "R3",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_submission_identity_survives_failure_interrupt_retry_and_identical_text",
+      "assessment": "Exact cumulative accepted input and original Retry ordinal independent of Conversation."
+    },
+    {
+      "id": "R4",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_later_failure_keeps_tier_consumes_request_and_retry_does_not_repeat_evaluation",
+      "assessment": "Bounded evaluator failure/cancellation/purpose/accounting retained."
+    },
+    {
+      "id": "R5",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_historical_resume_drops_only_schedules_and_keeps_requests; test_historical_migration_preserves_summary_todo_and_pending_retry",
+      "assessment": "Strict old-policy replay and one-way durable migration preserve genuine requests and continuation."
+    },
+    {
+      "id": "R6",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_cli_fatal_partial_policy_submission_and_clear_writes_prevent_dependent_actions; test_evaluation_and_ordinary_dispatch_share_configuration_snapshot",
+      "assessment": "Fatal append restoration/durable ordering and route/config/budget/spend behavior preserved."
+    },
+    {
+      "id": "R7",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "own_evidence": "test_session_tier.py::test_footer_and_model_command_expose_pending_and_selected_state; test_help_and_clear_explain_stable_selection_and_preserved_progress",
+      "assessment": "Current help/footer/README describe selected tier and separate pending one-shot evaluation."
+    },
+    {
+      "id": "R8",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/02-durable-openrouter-affinity.review.md",
+      "own_evidence": "test_session_affinity.py::test_ordinary_affinity_survives_followups_retries_turns_and_resume",
+      "assessment": "Actual streaming/nonstream HTTP requests retain exact durable identity across ordinary execution paths."
+    },
+    {
+      "id": "R9",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/02-durable-openrouter-affinity.review.md",
+      "own_evidence": "test_session_affinity.py::test_evaluator_affinity_is_separate_and_survives_retries_and_resume; test_provider_identity_is_optional_openrouter_metadata; test_compression.py; test_context_recovery.py",
+      "assessment": "Auxiliary purpose suffixes and optional Provider seam; prepared input/preferences intact."
+    },
+    {
+      "id": "R10",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/02-durable-openrouter-affinity.review.md",
+      "own_evidence": "README.md:487; reviewed exact diff and unchanged uv.lock",
+      "assessment": "Per-model best-effort guarantee documented; no prewarm/poll/cache-control/dependency added."
+    },
+    {
+      "id": "R11",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_ordinary_request_orders_stable_rules_before_changing_context",
+      "assessment": "Production builder rules/project then Memory/Skills/Summary/Todo preserves original content and gates."
+    },
+    {
+      "id": "R12",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_project_instructions_integration.py; test_agent_mode.py; test_compression.py; test_context_recovery.py",
+      "assessment": "Fresh project snapshots and live mode/confirmation boundaries retained; prior independent review covers immediate Memory/Skill/Todo regressions."
+    },
+    {
+      "id": "R13",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_effective_catalogue_order_does_not_depend_on_registration_or_skill_order",
+      "assessment": "Deterministic names/catalogue/skill descriptions preserve meaningful argument arrays and mode availability."
+    },
+    {
+      "id": "R14",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_variable_context_preserves_prepared_stable_prefix_and_complete_budget",
+      "assessment": "Four-provider production prepared prefix and complete-input budgets verified for four variable context kinds."
+    },
+    {
+      "id": "R15",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_session_report.py::test_report_correlates_routes_by_explicit_openings_and_not_text; test_report_bounds_latest_executions_routes_and_bytes_without_losing_aggregates",
+      "assessment": "Explicit Run/opening/ordinal/Retry/outcome attribution bounded to latest20/execution16 groups."
+    },
+    {
+      "id": "R16",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_session_report.py::test_report_counts_mixed_physical_attempts_across_runs_with_independent_coverage; test_report_correlates_routes_by_explicit_openings_and_not_text",
+      "assessment": "Actual route observations/adjacent cache evidence; ordinary versus maintenance kept separate without causal savings claims."
+    },
+    {
+      "id": "R17",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_session_report.py::test_cache_fraction_uses_only_compatible_same_samples; test_record_damage_breaks_attribution_until_next_opening; test_route_labels_are_bounded_redacted_and_sanitized_before_display",
+      "assessment": "Known-zero/absent/invalid/partial coverage and same-sample positive-denominator fraction; bounded sanitized report."
+    },
+    {
+      "id": "R18",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_cache_accounting.py::test_supplied_cache_evidence_matches_stream_nonstream_and_failure; test_malformed_stream_cache_keeps_independent_tokens_and_no_direct_estimate",
+      "assessment": "All4 supplied cache normalized stream/nonstream/failure; Anthropic disjoint counts and others subset semantics."
+    },
+    {
+      "id": "R19",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_cache_accounting.py::test_anthropic_cache_counts_and_ttl_are_normalized_and_billed_once; test_direct_cache_subsets_are_not_added_twice; test_missing_cache_coverage_stays_absent_and_unproven_estimates_unavailable; test_available_estimate_is_logged_and_charged_once_per_physical_attempt",
+      "assessment": "Actual locked local calculator cache/TTL contracts; OpenRouter authoritative, unknown unsupported/required evidence, no double spend. Gemini thought-token limitation retained."
+    },
+    {
+      "id": "R20",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "own_evidence": "test_session_report.py::test_report_preserves_pending_routing_input_usage_spend_and_configuration",
+      "assessment": "Local-only no-arg recorded report preserves state apart from existing Audit Event."
+    },
+    {
+      "id": "R21",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_explicit_retry_has_its_own_file_set_and_recovery_never_walks_older_changes; test_unclosed_mutation_recovery_retains_request_for_fresh_retry_after_resume; test_later_unchanged_execution_and_conversation_commands_retain_latest_checkpoint",
+      "assessment": "Exact latest file-changing opening including failed/interrupted/unclosed; coalescing and no-op/rollback retention."
+    },
+    {
+      "id": "R22",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_patch_and_repeated_edit_restore_exact_bytes_modes_after_resume; test_unsafe_or_corrupt_companion_is_refused_before_recovery_or_dispatch; test_recursive_workspace_aliases_keep_recovery_images_out_of_provider_and_logs",
+      "assessment": "Exact bytes/mode/absence, private owner-only bounded companion, actual canonical recursive privacy at Provider/log seam."
+    },
+    {
+      "id": "R23",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_process_death_at_capture_boundaries_reconciles_without_running_tools; test_capture_persistence_failures_stop_before_dependent_dispatch; test_failed_single_write_with_real_partial_bytes_rolls_back_exactly; test_mutation_revalidates_prepared_before_state_after_confirmation",
+      "assessment": "Durable pre-intent/observed after-state at approved boundary; actual partial-write rollback and fatal ambiguity."
+    },
+    {
+      "id": "R24",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_recover_requires_literal_yes_even_in_auto; test_plan_recovery_preview_never_restores_including_live_mode_change; test_recovery_preview_is_bounded_after_control_character_sanitization",
+      "assessment": "Local bounded preview identifies execution/scope; literal yes/plan/live gate/cancellation/help/arguments."
+    },
+    {
+      "id": "R25",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_recover_refuses_whole_set_when_one_file_conflicts; test_recovery_revalidates_whole_set_after_confirmation; test_repeated_canonical_and_leaf_alias_mutations_coalesce_and_keep_link",
+      "assessment": "Whole-set before/after-confirmation revalidation with content/mode/link/parent/integrity refusal."
+    },
+    {
+      "id": "R26",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_restore_failure_rolls_back_or_halts_with_durable_uncertainty; test_recovery_log_partial_append_restores_prefix_or_halts_without_false_success",
+      "assessment": "Exact restore, partial rollback, compact durable start/completion and consumed-once checkpoint."
+    },
+    {
+      "id": "R27",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_process_death_during_restore_never_replays_obsolete_pending_results; test_recovery_discards_matching_pending_tools_todo_urls_and_replay_before_fresh_retry; test_recover_invalidates_prefix_inherited_by_retry_without_new_file_changes; test_recovery_preserves_unrelated_later_pending_execution; test_recover_preserves_same_ordinal_retry_without_inherited_target_prefix",
+      "assessment": "Real process death reconciliation; no automatic restore, durable exact contributor-lineage invalidation and unrelated continuation preservation."
+    },
+    {
+      "id": "R28",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "test_file_recovery.py::test_recovery_bounds_reject_before_the_would_exceed_write; test_actual_four_mebibyte_limit_rejects_tool_before_confirmation; test_later_unchanged_execution_and_conversation_commands_retain_latest_checkpoint; test_recovery_excludes_actual_shell_effects",
+      "assessment": "Bounded latest-only storage; before-write refusal, legacy no-companion and shell exclusion."
+    },
+    {
+      "id": "R29",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_reviewed_production_surface",
+      "assessment": "Exactly3 full production HTTP-captured plan/build/auto system+ordered-schema fixtures."
+    },
+    {
+      "id": "R30",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_surfaces_ignore_clock_root_home_credentials_and_hash_seed",
+      "assessment": "Isolated synthetic fixture environment and blocked network; three byte-identical fixtures under altered ambient values."
+    },
+    {
+      "id": "R31",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "own_evidence": "test_prompt_surface.py::test_real_surface_changes_require_fixture_regeneration; tests/README.md",
+      "assessment": "Real prompt/schema sensitivity, deliberate offline regeneration and existing behavioral tests preserved."
+    },
+    {
+      "id": "R32",
+      "status": "verified",
+      "prior_review": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md",
+      "own_evidence": "All5 exact-range reviews; source/hash/full-suite parity; README.md:239,244,824",
+      "assessment": "Production integration, complete delivery documentation and exact review/full-suite evidence verified; README F1 closed by factual prose-only correction at106b852."
+    }
+  ],
+  "findings": [],
+  "checks": [
+    {
+      "command": ".venv/bin/pytest -q tests/test_session_tier.py tests/test_session_affinity.py tests/test_prompt_surface.py tests/test_session_report.py tests/test_cache_accounting.py tests/test_file_recovery.py tests/test_compression.py tests/test_context_recovery.py tests/test_agent_mode.py tests/test_project_instructions_integration.py --junitxml=/tmp/0053-feature-verifier-focused.xml",
+      "execution": "require_escalated, installed offline fallback",
+      "outcome": "756 passed in49.99s; no errors/failures/skips; JUnit49.564s"
+    },
+    {
+      "command": "git diff --check cf765d1188427099dc4918dccb8171ece1939e66..HEAD",
+      "outcome": "exit0"
+    },
+    {
+      "command": "git diff --name-only 0f5b6742095482af168af0741059e7cc487dcd6c -- src tests",
+      "outcome": "empty: final exercised src/tests match approved implementation head"
+    },
+    {
+      "command": "Python hashlib verification of final13-file freeze against live and reviewed head; XML parse; git commit/range coverage",
+      "outcome": "all13 match; final full XML2757 clean; six production commits covered; /tmp/0053-feature-verifier-identity.json"
+    },
+    {
+      "command": "git status --short",
+      "outcome": "clean; no tracked edits/commits/pushes"
+    },
+    {
+      "command": "git rev-parse HEAD; git status --short; git diff 3ea19222926d98819701e33d80c8a89821a280c6..HEAD -- README.md; git diff --name-only 3ea19222926d98819701e33d80c8a89821a280c6..HEAD -- src tests; git diff --name-only 0f5b6742095482af168af0741059e7cc487dcd6c..HEAD -- src tests; source paragraphs in file_recovery.py/providers/http.py",
+      "outcome": "Narrow F1 recheck passed. HEAD106b852ccbc6ffcda52c32eb0e802637b9c2b48e, clean; no src/tests delta versus own756-test checkout or approved implementation head; exactly3 factual README corrections consistent with connected source and prior passing tests. No test suite repeated for prose-only change."
+    }
+  ],
+  "full_suite_evidence": {
+    "inspected_not_rerun": true,
+    "path": "/tmp/0053-ticket05-correction-r1-full.xml",
+    "tests": 2757,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_seconds": 159.615,
+    "observed_console_seconds": 159.69,
+    "matching_source_proof": "/tmp/0053-ticket05-correction-r1-freeze.json plus current entire src/tests parity at reviewed head; final106b852 changes only documentation/bookkeeping, src/tests remain identical. Initial13-file freeze was valid at3ea1922; README subsequently changed solely to close F1."
+  },
+  "security_coverage": {
+    "status": "verified",
+    "method": "Reuse exact approved mandatory BRANCH security records; independently enumerate all6 production source/test commits and confirm inclusion in approved ranges. No new full-history audit.",
+    "records": [
+      "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "tickets/0053-stable-sessions-and-recovery/02-durable-openrouter-affinity.review.md",
+      "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md"
+    ],
+    "identity_artifact": "/tmp/0053-feature-verifier-identity.json",
+    "credential_scan_repeated": false,
+    "correction_F1": "Original recovery recursive alias privacy finding corrected at0f5b674, independently approved; own full recovery suite includes12 real Provider/log alias privacy regressions.",
+    "final_documentation_correction": "Narrow factual README prose correction inspected; no production/source/test changes or new dependencies. Six production commits remain covered by exact prior mandatory security reviews."
+  },
+  "prior_evidence": {
+    "reviews": [
+      "tickets/0053-stable-sessions-and-recovery/01-stable-selection-with-historical-replay.review.md",
+      "tickets/0053-stable-sessions-and-recovery/02-durable-openrouter-affinity.review.md",
+      "tickets/0053-stable-sessions-and-recovery/03-stable-prompt-prefix-and-surface-fixtures.review.md",
+      "tickets/0053-stable-sessions-and-recovery/04-task-routes-and-cache-accounting.review.md",
+      "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.review.md"
+    ],
+    "handoffs": [
+      ".ai/0053-05-implementation-handoff.json",
+      ".ai/0053-05-correction-r1-handoff.json",
+      ".ai/0053-05-acceptance-self-check.md",
+      ".ai/0053-04-implementation-handoff.json",
+      ".ai/0053-03-implementation-handoff.md"
+    ],
+    "historical_replay": "Ticket01 independent17375 base/head comparisons documented in committed review; historical temporary logs not revalidated/recreated.",
+    "earlier_full_counts": [
+      2498,
+      2532,
+      2558,
+      2644
+    ],
+    "recovery_independent": "Ticket05 committed independent evidence: original privacy probe1pass plus485 regressions; own756test run supplements it."
+  },
+  "limitations": [
+    "No live Provider/model/cache-hit/latency/savings measurements, paid calls, installations, sudo, or pushes. Structural prefix/affinity and fixed-rate tests do not establish production savings.",
+    "Pre-existing Gemini separately reported thought tokens remain excluded from completion normalization and can undercount cost; accepted baseline/head limitation remains documented in brief and CONTEXT. Cache-specific validation does not establish full billed-cost correctness.",
+    "OpenAI estimates deliberately remain unavailable if required cache evidence is absent.",
+    "Recovery is latest execution only, excludes shell/earlier Retry executions, uses0600 for newly created regular files and preserves existing modes.",
+    "Interrupted mixed restore remains visibly unresolved. Concurrent Session Runs, actively racing external writers and unobservable filesystem corruption are outside approved scope.",
+    "Full suite reused against matching final source; prior exact ticket/security review evidence inspected rather than repeated. Historical temporary logs may no longer exist."
+  ],
+  "documentation_audit": "README F1 independently rechecked and closed at106b852. All six priorities and R1-R32 pass. README/help, ENV_VARS, tests guide, CLAUDE, CONTEXT and dated research implemented-status evidence retained; historical research proposals remain explicitly dated.",
+  "initial_checkout": "3ea19222926d98819701e33d80c8a89821a280c6",
+  "resolved_findings": [
+    {
+      "id": "F1",
+      "severity": "low",
+      "classification": "documentation_only",
+      "requirements": [
+        "R32"
+      ],
+      "locations": [
+        "README.md:239",
+        "README.md:244",
+        "README.md:824"
+      ],
+      "summary": "Three obsolete statements contradict the final recovery/cache implementation.",
+      "root_cause": "New recovery/cache sections were added but older apply_patch and Attempt documentation retained superseded assertions.",
+      "evidence": [
+        "README239 says restored deleted files get default modes; apply_patch_change uses file_recovery.apply_effects, whose rollback uses the original before image and put calls os.fchmod with its saved mode (file_recovery.py:177,201).",
+        "README244-246 says Git is the only approved-patch revert; complete recovery test test_patch_and_repeated_edit_restore_exact_bytes_modes_after_resume passed, including deletion recreation with mode0640.",
+        "README824 describes null cache evidence as including other Providers; response_usage preserves supplied counters across all4 Providers, and test_supplied_cache_evidence_matches_stream_nonstream_and_failure passed."
+      ],
+      "suggested_replacements": {
+        "README.md:239-240": "original bytes and permissions. The Tool error names the failing file and, if a restore",
+        "README.md:243-246": "`apply_patch` is denied in `plan`, exactly like `write`, `edit` and `shell`,\nbefore validation or confirmation. Approved changes participate in the same\nlatest-execution `/recover` checkpoint as `write` and `edit`.",
+        "README.md:822-827": "Attempts retain supplied `cached_tokens` and `cache_write_tokens` for all four\nProviders; unavailable evidence is `null`, while reported zero remains `0`.\nOpenRouter/OpenAI/Gemini cache reads are subsets of `prompt_tokens`; Anthropic\nnormalized prompt includes noncache input plus cache reads and writes.\nOpenRouter retains its Provider-reported cost."
+      },
+      "required_action": "Apply a minimal factual README correction; no source change or repeated full suite needed. Narrow source/docs consistency recheck suffices.",
+      "status": "closed",
+      "resolution_commit": "106b852ccbc6ffcda52c32eb0e802637b9c2b48e",
+      "resolution": "Narrow independent source/docs recheck confirms all3 README paragraphs now accurately describe exact original-mode rollback, latest-execution patch recovery and supplied four-Provider cache counters. Existing accepted recovery/cache tests remain applicable because src/tests have no delta."
+    }
+  ]
+}

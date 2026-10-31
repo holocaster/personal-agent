@@ -1,0 +1,112 @@
+{
+  "status": "ready_for_review",
+  "ticket": "tickets/0053-stable-sessions-and-recovery/05-recover-file-changing-execution.md",
+  "base_sha": "6e1de330173377f02209ae14f475bb934f316192",
+  "resumed_from": "6e1de330173377f02209ae14f475bb934f316192",
+  "summary": "Local latest-execution exact file checkpoints/recovery at approved Tool apply boundaries with private bounded journals, conservative reconciliation and durable matching-continuation invalidation.",
+  "changed_files": [
+    "README.md",
+    "docs/ENV_VARS.md",
+    "docs/research/2026-10-14-reference-opportunities.md",
+    "src/personal_agent/call_log.py",
+    "src/personal_agent/file_recovery.py",
+    "src/personal_agent/project_instructions.py",
+    "src/personal_agent/routing/router.py",
+    "src/personal_agent/terminal/repl.py",
+    "src/personal_agent/tools/apply_patch.py",
+    "src/personal_agent/tools/registry.py",
+    "src/personal_agent/tools/workspace.py",
+    "tests/test_file_recovery.py",
+    "tests/test_workspace_tools.py"
+  ],
+  "tests_added_or_changed": [
+    "tests/test_file_recovery.py:100 end-to-end/real-filesystem cases",
+    "tests/test_workspace_tools.py: five existing failure injectors retargeted from Path.write_bytes to descriptor-safe put; same rollback/error assertions retained"
+  ],
+  "checks": [
+    {
+      "command": ".venv/bin/pytest -q tests/test_file_recovery.py",
+      "result": "passed",
+      "evidence": "100 passed in11.64s on final source"
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_workspace_tools.py tests/test_project_instructions.py tests/test_project_instructions_integration.py tests/test_workspace_skills.py tests/test_file_recovery.py",
+      "result": "passed",
+      "evidence": "397 passed in18.15s on final source"
+    },
+    {
+      "command": ".venv/bin/python -m compileall -q src/personal_agent",
+      "result": "passed",
+      "evidence": "exit0 on final source"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "evidence": "exit0 on final source"
+    },
+    {
+      "command": ".venv/bin/pytest -q --junitxml=/tmp/0053-ticket05-final-pytest.xml",
+      "result": "passed",
+      "evidence": "2744 passed in150.71s on unchanged final13-file source; JUnit /tmp/0053-ticket05-final-pytest.xml; freeze hashes verified before and after commit"
+    },
+    {
+      "command": "git status --short",
+      "result": "passed",
+      "evidence": "empty output after commit; working tree clean"
+    }
+  ],
+  "proof": {
+    "exact_files_resume": "test_patch_and_repeated_edit_restore_exact_bytes_modes_after_resume restores original CRLF bytes, 0751 edited mode, 0640 deleted mode, removes creation and preserves completed Conversation after Resume.",
+    "conflicts": "test_recover_refuses_whole_set_when_one_file_conflicts covers content/chmod/absence/replaced-link/replaced-parent; created companion file remains unchanged in every conflict.",
+    "matching_pending": "OpenRouter/Gemini live/Resume cases start with actual nonempty fetched_urls, active Todo, completed write result and Gemini signature/replay; recovery removes obsolete prefix and a fresh Retry sends only the user request, same ordinal.",
+    "unrelated_pending": "test_recovery_preserves_unrelated_later_pending_execution preserves later calculator result through Resume and explicit Retry.",
+    "unclosed_request": "test_unclosed_mutation_recovery_retains_request_for_fresh_retry_after_resume recovers a mutation without Turn End then resumes fresh original request.",
+    "real_process_death": "Six os.fork/os._exit capture boundaries and five restore boundaries inspect actual file bytes on Resume; no automatic mutation/Tool replay and conservative pending invalidation.",
+    "partial_write": "test_failed_single_write_with_real_partial_bytes_rolls_back_exactly writes partial bytes/chmods before raising; actual original CRLF bytes and 0751 return.",
+    "restore_failure": "test_restore_failure_rolls_back_or_halts_with_durable_uncertainty applies first restore and partial second restore, then verifies rollback to A/B after-states; failed rollback leaves explicit unresolved journal and halts.",
+    "durability": "Partial Call Log started/finished append injections prove valid prefix restoration; truncate failures halt and make Resume visibly refuse malformed tail. Completion failure rolls files back and conservatively retains invalidation.",
+    "privacy_bounds": "Owner-only 0700/0600; exact base64 bytes retained only in companion, excluded from logs/audit/Provider; redacted/sanitized preview bounded after expansion; real 4MiB image and 64 canonical paths, scaled aggregate/manifest/peak storage rejection before mutation.",
+    "confinement": "Excluded names/resolved aliases/storage, hardlinks, unsafe companion permissions/symlink/FIFO/malformed identity/schema/hash/base64/oversize refuse writes; canonical and leaf-alias mutations coalesce while preserving leaf link.",
+    "legacy": "Legacy/no-companion runs and existing runtime configuration with a permissive unrelated home directory remain readable; unsafe snapshot storage still refuses capture.",
+    "retry_lineage": "Four real REPL REDs (OpenRouter/Gemini, live/Resume) proved that a read-only Retry inherited an undone write result. Fixed by replaying contributor openings across failed-prefix Retry inheritance. Six green cases assert final actual Provider payload contains only the original user request; a no-TurnEnd Retry also resets. A successful-task fresh Retry with the same ordinal keeps its independent calculator result, proving no ordinal-only invalidation.",
+    "privacy_boundaries": "Actual Provider request RED proved read_file could expose cHJpdmF0ZSBvcmlnaW5hbA== when HOME is inside Workspace Root. Shared exclusions now refuse same/cross-project recovery storage for direct/alias reads, direct/recursive search, directory listing and direct/alias Project Instructions @refs. Final100-case recovery suite verifies payloads do not contain that exact private image.",
+    "confirmation_revalidation": "All three file Tools detect externally edited prepared before-state after confirmation. Recovery also revalidates the whole set after confirmation and leaves every path unchanged on conflict. Earlier successful write remains recoverable after later Tool confirmation Ctrl+C, with interrupted outcome and fresh Retry state.",
+    "retention_scope": "Actual shell write remains untouched by /recover; read-only/noop/reject/clear/undo/compress and a real partial mutation fully rolled back retain the previous eligible checkpoint."
+  },
+  "root_causes_proven_during_implementation": [
+    "No recovery command or exact durable before-image existed: initial real create/recover test failed with file left on disk.",
+    "Unclosed execution recovery initially lost Retry request: red test proved pending None, fixed via matching recovery intent replay.",
+    "Completion/promotion exceptions initially could report a handled Tool error or roll files back after durable success; red tests drove explicit fatal completion behavior and reconciliable final promotion.",
+    "Peak storage initially checked final manifest after mutation: preflight now reserves active/latest/temp before write.",
+    "Unhashable malformed manifest state caused TypeError; string/type guards now reject visibly, with sibling outcome/progress guards.",
+    "Sanitization expanded a bounded raw preview from32k to128k; red test drove redaction/sanitization before bounding.",
+    "Private ancestors were validated despite missing companion, breaking21 runtime config tests with default0755 home .personal_agent; validation now happens only when companion exists or capture begins.",
+    "Unresolved recovery blocked task dispatch but initially allowed manual Compression; red test drove same safety check at that Provider-dispatch seam.",
+    "Matching only current opening left undone Tool results in a later read-only Retry inherited from the target execution. Replay now tracks contributor opening tuples solely across inherited pending prefixes; durable recovery intent invalidates a contributing target, while independent same-ordinal and later-task pending work stays intact.",
+    "Snapshot storage exclusion existed only at mutation apply. With HOME inside Workspace Root, ordinary read_file exposed a private before-image in actual Provider input. Central workspace exclusions now cover all recovery-* project companions for reads/search/list and Project Instructions reuse the same boundary; direct/alias/cross-project tests pass."
+  ],
+  "deviations": [],
+  "discovered_issues": [],
+  "limitations": [
+    "No paid calls, installs, sudo or push; no external documentation lookup was needed for this stdlib/filesystem business logic.",
+    "Interrupted restoration with mixed exact states stays visibly unresolved; Resume never automatically restores files.",
+    "Concurrent/actively racing external writers and filesystem corruption are outside the approved contract.",
+    "Newly created workspace regular files use explicit0600 mode so the intended after-state is exact; existing file modes are preserved."
+  ],
+  "proposed_context_edits": {
+    "File checkpoint": "One owner-only exact before/after restore set for the latest Session/Run/opening execution changed by write/edit/apply_patch, including failed/interrupted work; coalesces canonical paths to first before/final after, retains bytes/absence/modes/link identity, and excludes shell and earlier Retry executions. /recover previews, requires literal yes outside plan, refuses whole-set conflicts and consumes availability after durable success.",
+    "Undo": "Append: Conversation-only; it does not restore workspace files or remove the latest File checkpoint.",
+    "Retry": "Append: Each explicit Retry has a separate execution/restore set with the original ordinal. A matching durable file-recovery intent discards obsolete assistant/Tool prefix, fetched URLs, Todo effects and Gemini replay; Retry then starts fresh from the saved request with current route/config/mode. Unrelated pending work and successful-task Undo semantics remain unchanged. Matching includes target execution prefixes inherited by explicit Retry; it does not use ordinal equality alone.",
+    "Call Log": "Append: Compact file_recovery_started/file_recovery_finished records attribute exact execution and outcome, durably invalidating only matching pending continuation. Exact file images live solely in the owner-only recovery companion; Conversation remains solely in Call Log.",
+    "Mutating Tools decision": "Replace the obsolete no-before-image/Git-only revert sentence with: Approved write/edit/apply_patch operations durably capture bounded intent before mutation and observed after-state before dependent dispatch, preserving partial-write/patch rollback. Latest-only recovery-<Session Id>/ companions are0700/0600, with min(current PA_MAX_WRITE_BYTES,4MiB)/image,64 canonical paths,16MiB combined images,24MiB/manifest and80MiB latest/active/temp per Session. Unsafe links/owner/permissions, excluded paths, integrity conflicts and would-exceed operations refuse rather than silently lose recovery. Workspace reads/search/list and Project Instructions @refs also exclude recovery storage, including resolved aliases and other project companions within Workspace Root."
+  },
+  "acceptance_self_check": "/tmp/0053-ticket05-acceptance.md",
+  "code_freeze": "/tmp/0053-ticket05-code-freeze.json",
+  "head_sha": "968b61321762010366e11c80b721bbcec85c0188",
+  "commit": {
+    "subject": "feat(recovery): restore latest file-changing execution",
+    "sha": "968b61321762010366e11c80b721bbcec85c0188",
+    "files": 13,
+    "authorization": "Current user approved remaining local feature0053 commits with sim pode commit; no push"
+  }
+}

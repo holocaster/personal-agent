@@ -1,0 +1,20 @@
+# 03: A session budget can stop an Escalation from running up the bill
+
+**What to build:** the user optionally sets `ROUTER_BUDGET_USD` before starting the REPL. From then on, the Router totals what the session has spent across every Attempt, and once that total reaches the ceiling it stops escalating — the user gets an error that says so by name (`budget exceeded, not escalating to complex`) rather than a model error, so they can tell "the models failed me" apart from "I capped myself". The ceiling never blocks the tier the Classifier originally picked, so setting it can never stop the user getting a first answer. Leaving the variable unset means today's behaviour exactly.
+
+**Blocked by:** 02 (the guardrail gates the tier transition Escalation performs; with no Escalation there is nothing to gate).
+
+**Spec:** `docs/specs/0002-router-reliability.md` — Solution (Budget Guardrail); Implementation Decisions (Budget Guardrail; Why the check is "already spent >= limit"; Blocked-Escalation result; No Call Log entry for a blocked Escalation); Testing Decisions (Coverage for Budget Guardrail); Further Notes. **ADRs:** none for this ticket.
+
+- [x] A Budget Guardrail module exposes a loader that reads `ROUTER_BUDGET_USD` and returns nothing when it is unset or empty, otherwise a guardrail object holding the limit and a running total starting at zero.
+- [x] A `ROUTER_BUDGET_USD` that is present but not a valid positive number is a startup error, reported the same way missing Tier Config variables are today: a clear message before the first prompt, exiting non-zero — never a silently disabled guardrail discovered mid-session.
+- [x] The guardrail object accumulates the cost of every Attempt, ignoring a `None` cost, and answers one question: is the accumulated total still below the limit?
+- [x] `__main__` loads the guardrail once at startup and hands it to the REPL, which passes it into every `route()` call — one object spanning the session, dying with the process. There is no module-level mutable spend counter and no derivation from the Call Log file (`docs/CONTEXT.md`, Budget Guardrail window).
+- [x] `route()` takes the guardrail as an optional trailing parameter defaulting to "no guardrail", so every existing call site and test keeps working unchanged.
+- [x] The guardrail is consulted only at the moment of Escalation. The tier the Classifier picked runs its full Attempt budget regardless of the accumulated total.
+- [x] The check is "accumulated spend has reached the ceiling", not a prediction of the next tier's cost — there is no price table, and overshooting by the cost of the Attempts that crossed the ceiling is accepted.
+- [x] A blocked Escalation returns a `RouteResult` with the tier and model of the tier that just failed and `error` set to `budget exceeded, not escalating to {tier}`, naming the tier that was *not* tried. No new field is added to `RouteResult` and the REPL prints it through its existing `Error:` path unchanged.
+- [x] A blocked Escalation writes no Call Log entry: the log records Attempts, and a blocked Escalation is the absence of one.
+- [x] Tests cover: unset `ROUTER_BUDGET_USD` still escalates (the default is today's behaviour); a ceiling already reached blocks Escalation, sending no request to the next tier, with the error naming the blocked tier; the Classifier's own tier still runs its full Attempts including retries when the ceiling is already reached; costs accumulate across several tasks in one REPL session so a later task can be blocked by what an earlier one spent; and a non-numeric or negative `ROUTER_BUDGET_USD` exits non-zero at startup with a message.
+- [x] Tests continue to use the existing `urlopen` fake as the only seam and assert observable behaviour — which model IDs reached the wire and what the REPL printed — rather than reading the guardrail's running total.
+- [x] The README documents `ROUTER_BUDGET_USD` alongside the other environment variables, marked optional, explaining that it is per-session, that it only blocks Escalation, and that unset means no guardrail.

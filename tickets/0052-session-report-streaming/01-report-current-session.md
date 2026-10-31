@@ -1,0 +1,22 @@
+# 01: Report recorded activity across the current Session's Runs
+
+**What to build:** `/report` locally explains the current Session's recorded time, spend, tokens/cache and outcomes across all Runs. New Attempts record purpose, outcome and retry provenance so the report distinguishes real retries from Tool follow-ups without guessing about old logs.
+
+**Blocked by:** None (can start immediately).
+
+**Spec:** `docs/specs/0052-session-report-streaming.md`, Local report and recorded evidence (R01–R05), Accounting and completed state (R16), Isolation and user documentation (R17), and Testing Decisions. **ADRs:** 0002, 0005, 0008.
+
+- [x] `/report` accepts no arguments, appears in help/completion, follows ordinary local auditing and reads only the current project's current Session. A Provider dispatch spy proves it is local. Conversation, tier policy, pending continuation and Run spend remain unchanged.
+- [x] Reuse `session_logs.records` and Call Log safe opens/identity validation, existing byte/record bounds and one-pass aggregation. Summary is at most 8 KiB UTF-8, with bounded diagnostic/truncation text; no answers/snapshots retained or historical selectors/configuration added.
+- [x] Group physical Attempt records into ordinary execution, tier evaluation, Compression and unknown purpose using R03's exact legacy rules. Count valid start/resume boundaries, not audit copies or saved Conversation snapshots. Clear/Undo retain activity and Resume includes prior Runs.
+- [x] Show R04's Attempts/outcomes, technical retry breakdown/unknown coverage, explicit Retry count, recorded duration/first-text mean coverage, prompt/completion/cache subtotals and reported/estimated/unknown-provenance cost coverage. Empty/no-sample/known-zero cases remain distinct. Existing logs without streaming measurements show unknown evidence and require no migration.
+- [x] Reject invalid metric samples independently: boolean/nonfinite/negative duration or cost and noninteger/negative token counts cannot corrupt sums. Missing `cost_estimated`, missing purpose/retry/outcome and legacy `ok: false` use specified provenance/uncertainty instead of guessed values. Do not infer cache hits or generation/network/tool/human times.
+- [x] New actual dispatches record `purpose: execution | tier_selection | compression`, `outcome: ok | error | interrupted` and `retry_kind: initial | transient | context_overflow`; preserve existing fields/version/audit links. A second Tool round is initial; a dispatched transient retry or reduced exchange is counted appropriately; local blocked assessments are not Attempts. Explicit `/retry` remains its separate event.
+- [x] Start duration immediately before Provider dispatch after busy/local setup, preserve available usage on all failure paths including interruption, and end timing without Tool/human/evaluator/backoff work. Run spend still sums each recorded cost once and resets on Resume.
+- [x] Missing/inaccessible/unsafe files and initial identity failures are visible. Malformed/oversized/incomplete/wrong-identity rows or exhausted scan produce explicit incomplete-inspection evidence; partial recorded subtotals cannot appear as full totals. Current active Run's missing close is normal; prior unclosed Runs/dangling submissions remain unresolved. Known keys/controls are protected in metadata and diagnostics.
+- [x] Isolated mixed-log fixtures independently prove exact totals across two Runs and no duplicate counting: maintenance, Tool follow-ups, transient/context retry, explicit Retry, failure/interruption, snapshot/audit copies, clear/undo, missing/zero/invalid samples and partial evidence. Focused REPL, Call Log, routing, Session reader, context recovery/evaluator/Compression and Resume regressions pass.
+- [x] Update concise README/help for `/report`, scope, coverage, recorded versus estimated spend and duration limits. Preserve unrelated documentation and historical planning artifacts.
+
+## Implementation notes
+
+Own the local report and additive attribution now; do not build a speculative observability subsystem. Keep aggregation/rendering at a small local seam callable from REPL. Ticket 02 adds actual first-text measurements and streaming integration to this evidence contract. You are not alone in the codebase; preserve others' changes. Use isolated mocks, no paid calls/new dependencies and no unnecessary code comments. Validate small increments before broad checks.

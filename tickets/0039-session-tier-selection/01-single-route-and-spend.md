@@ -1,0 +1,14 @@
+# 01: Keep failed tasks on one route and display uncapped Run spend
+
+**What to build:** A task stays on its chosen Provider/model through transient retries and fails visibly when those retries are exhausted. The user can choose another tier and retry. Monetary reporting shows only accumulated Run spend, including Compression, with no configurable cap.
+
+**Blocked by:** None (can start immediately).
+
+**Spec:** `docs/specs/0039-session-tier-selection.md`, R8, R9, R12, R13; Implementation Decisions: Evaluator and ordinary Router, Spend and presentation; Testing Decisions. **ADRs:** `docs/adrs/0006-persist-session-tier-and-remove-escalation.md`, `docs/adrs/0005-call-log-is-the-conversation-record.md`.
+
+- [x] **AC1 — R8:** Flatten the ordinary Router's ladder to one selected route. Exhausted/non-retryable initial exchanges surface their failure without another tier call and tell users about `/model` and `/retry`. Keep same-route transient retry policy, Tool follow-ups, Context Overflow Recovery, and original error details. Remove obsolete ladder/exhaustion plumbing; heuristic initial selection remains only until ticket 02.
+- [x] **AC2 — R9:** Delete Budget Guardrail and monetary parameters/imports from CLI, REPL, routing and Compression. Remove `PA_BUDGET_USD` validation/configuration documentation and limit display. Startup accepts even a malformed obsolete value without using it. Do not remove or change token Context Budget configuration or enforcement.
+- [x] **AC3 — R9, R12:** Retain `call_log.total_cost()` as the single Run spend accumulator; reported successful/failed Attempt and Compression costs count once, Estimated Cost provenance and unknown usage remain, and Resume resets spend. Footer and `/usage` show spend without a monetary maximum. Compression still uses easy.
+- [x] **AC4 — R12:** Preserve task configuration snapshots, preventive Compression, protected in-progress turns, same-route overflow recovery, fatal persistence handling, and Tool/Agent Mode boundaries. No Provider contract changes or new dependency are needed.
+- [x] **AC5 — R13:** Update README, CLAUDE.md and CONTEXT.md claims affected by this slice to match the implemented behavior. Mark Session-tier selection as pending until ticket 02 rather than describing it as implemented. Preserve historical specs/research records.
+- [x] **AC6:** Replace obsolete escalation/budget tests with request-sequence assertions for no tier switching, same-route retry success/exhaustion and non-retryable failure. Verify startup with malformed obsolete budget, footer/usage spend and Resume reset using existing seams; retain Compression/recovery coverage. Adjust shared fixtures that import the removed budget module. Run focused routing/REPL/CLI/context checks, then `uv run --offline pytest -q`; record counts and outcomes.
